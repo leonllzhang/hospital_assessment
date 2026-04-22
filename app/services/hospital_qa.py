@@ -15,13 +15,15 @@ GRAPH_SCHEMA = (
     "(Indicator)-[:HAS_NUMERATOR/HAS_DENOMINATOR]->(DataElement)"
 )
 
+# 扩展数据库 Schema 描述，以便 LLM 生成更精准的 SQL
 DB_SCHEMA = (
-    "表名: surgery_records。字段: record_month(TEXT), department(TEXT), "
-    "is_weichuang(INTEGER 1是0否), surgery_level(INTEGER)"
+    "1. 手术记录表 (surgery_records): record_month(月份), department(科室), is_weichuang(微创 1是0否), surgery_level(手术等级 1-4)\n"
+    "2. 财务运营表 (financial_records): record_month(月份), medical_income(医疗收入), personnel_expenditure(人员支出), energy_expenditure(能耗支出), assets(总资产), liabilities(总负债)\n"
+    "3. 满意度表 (satisfaction_records): record_month(月份), outpatient_score(门诊满意度分), inpatient_score(住院满意度分)"
 )
 
 
-def init_mock_db() -> sqlite3.Connection:
+def init_mock_db(db_path: str) -> sqlite3.Connection:
     conn = sqlite3.connect(":memory:", check_same_thread=False)
     cursor = conn.cursor()
     cursor.execute(
@@ -73,7 +75,8 @@ class HospitalQAService:
             settings.neo4j_uri,
             auth=(settings.neo4j_user, settings.neo4j_password),
         )
-        self.sqlite_conn = init_mock_db()
+        # 使用配置文件中的路径初始化文件数据库
+        self.sqlite_conn = init_mock_db(settings.sqlite_db_path)
 
     def intent_router(self, user_query: str) -> str:
         prompt = (

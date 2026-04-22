@@ -21,6 +21,8 @@ class Settings:
     dashscope_base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     model_name = "qwen-plus"
     dev_frontend_origin = os.getenv("FRONTEND_DEV_ORIGIN", "http://127.0.0.1:5173")
+    # 新增：SQLite 数据库文件存储路径，默认存储在项目根目录下
+    sqlite_db_path = str(BASE_DIR / "hospital_data.db")
 
     @property
     def missing_required_values(self) -> list[str]:

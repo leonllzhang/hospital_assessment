@@ -2,6 +2,8 @@ import os
 import json
 import re
 import sqlite3
+import random
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from openai import OpenAI
 from neo4j import GraphDatabase
@@ -28,31 +30,73 @@ client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 neo4j_driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
 # ================= 1. 模拟底层业务数据库 (SQLite) =================
-def init_mock_db():
+def init_mock_db(db_path: str) ->sqlite3.Connection :
     """初始化模拟的医院业务明细数据库"""
-    conn = sqlite3.connect(':memory:')  # 使用内存数据库，每次运行重置，方便测试
+    conn = sqlite3.connect(db_path, check_same_thread=False)
     cursor = conn.cursor()
     
-    # 建表: 模拟手术明细表
-    cursor.execute('''
+    # 创建表结构
+    cursor.execute("DROP TABLE IF EXISTS surgery_records")
+    cursor.execute("""
         CREATE TABLE surgery_records (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            record_month TEXT,       -- 记录月份 (如 '2026-03')
-            department TEXT,         -- 科室名称 (如 '骨科', '普外科')
-            is_weichuang INTEGER,    -- 是否微创手术 (1为是，0为否)
-            surgery_level INTEGER    -- 手术级别 (1, 2, 3, 4)
+            record_month TEXT,
+            department TEXT,
+            is_weichuang INTEGER,
+            surgery_level INTEGER
         )
-    ''')
+    """)
     
-    # 插入一些模拟测试数据
-    mock_data =[
-        ('2026-03', '骨科', 1, 3), ('2026-03', '骨科', 0, 4), 
-        ('2026-03', '骨科', 1, 2), ('2026-03', '骨科', 0, 3), # 骨科微创占比 2/4 = 50%
-        ('2026-03', '普外科', 0, 4), ('2026-03', '普外科', 0, 3), 
-        ('2026-03', '普外科', 1, 2), ('2026-03', '普外科', 0, 4), # 普外微创占比 1/4 = 25%
-        ('2026-02', '骨科', 1, 4) # 干扰数据，测试时间条件
-    ]
-    cursor.executemany('INSERT INTO surgery_records (record_month, department, is_weichuang, surgery_level) VALUES (?, ?, ?, ?)', mock_data)
+    cursor.execute("DROP TABLE IF EXISTS financial_records")
+    cursor.execute("""
+        CREATE TABLE financial_records (
+            record_month TEXT PRIMARY KEY,
+            medical_income REAL,
+            personnel_expenditure REAL,
+            energy_expenditure REAL,
+            assets REAL,
+            liabilities REAL
+        )
+    """)
+
+    # 1. 构建复杂的【手术记录】数据 (模拟2025年全年)
+    departments = ["骨科", "普外科", "胸外科", "妇产科", "神经外科", "泌尿外科"]
+    surgery_data = []
+    for month in range(1, 13):
+        month_str = f"2025-{month:02d}"
+        for dept in departments:
+            # 每个科室每月生成 20-50 条手术记录
+            num_surgeries = random.randint(20, 50)
+            for _ in range(num_surgeries):
+                # 模拟不同科室微创占比不同，例如普外科微创率较高
+                weichuang_prob = 0.7 if dept == "普外科" else 0.4
+                is_weichuang = 1 if random.random() < weichuang_prob else 0
+                # 模拟手术等级分布
+                level = random.choices([1, 2, 3, 4], weights=[10, 30, 40, 20])[0]
+                surgery_data.append((month_str, dept, is_weichuang, level))
+
+    cursor.executemany(
+        "INSERT INTO surgery_records (record_month, department, is_weichuang, surgery_level) VALUES (?, ?, ?, ?)",
+        surgery_data
+    )
+
+    # 2. 构建【财务运营】数据
+    financial_data = []
+    base_income = 5000000.0
+    for month in range(1, 13):
+        month_str = f"2025-{month:02d}"
+        income = base_income * random.uniform(0.9, 1.2) # 收入波动
+        personnel = income * random.uniform(0.35, 0.45) # 人员支出占比 35%-45%
+        energy = income * random.uniform(0.02, 0.05)    # 能耗支出占比
+        assets = 100000000.0 + (income * 0.1 * month)   # 资产累积
+        liabilities = 40000000.0 - (income * 0.02 * month) # 负债递减
+        financial_data.append((month_str, income, personnel, energy, assets, liabilities))
+
+    cursor.executemany(
+        "INSERT INTO financial_records VALUES (?, ?, ?, ?, ?, ?)",
+        financial_data
+    )
+
     conn.commit()
     return conn
 
