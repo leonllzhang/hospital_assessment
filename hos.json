@@ -1,0 +1,551 @@
+  [{
+    "id": 1,
+    "category_1": "医疗质量",
+    "category_2": "功能定位",
+    "name": "门诊人次数与出院人次数比",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:门诊患者人次数/同期出院患者人次数 (急诊、健康体检者不计入)。",
+    "source": "医院填报"
+  },
+  {
+    "id": 2,
+    "category_1": "医疗质量",
+    "category_2": "功能定位",
+    "name": "下转患者人次数(门急诊、住院)",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:本年度向二级医院或者基层医疗机构下转患者人次数(门急诊、住院)。",
+    "source": "医院填报"
+  },
+  {
+    "id": 3,
+    "category_1": "医疗质量",
+    "category_2": "功能定位",
+    "name": "日间手术占择期手术比例",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:日间手术台次数/同期出院患者择期手术总台次数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 4,
+    "category_1": "医疗质量",
+    "category_2": "功能定位",
+    "name": "出院患者手术占比",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:出院患者手术台次数/同期出院患者总人次数×100%。",
+    "source": "病案首页"
+  },
+  {
+    "id": 5,
+    "category_1": "医疗质量",
+    "category_2": "功能定位",
+    "name": "出院患者微创手术占比",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:出院患者微创手术台次数/同期出院患者手术台次数×100%。",
+    "source": "病案首页"
+  },
+  {
+    "id": 6,
+    "category_1": "医疗质量",
+    "category_2": "功能定位",
+    "name": "出院患者四级手术比例",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:出院患者四级手术台次数/同期出院患者手术台次数×100%。",
+    "source": "病案首页"
+  },
+  {
+    "id": 7,
+    "category_1": "医疗质量",
+    "category_2": "功能定位",
+    "name": "特需医疗服务占比",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:特需医疗服务量/同期全部医疗服务量×100%，特需医疗服务收入/同期全部医疗服务收入×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 8,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "手术患者并发症发生率",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:手术患者并发症发生例数/同期出院的手术患者人数×100%。",
+    "source": "病案首页"
+  },
+  {
+    "id": 9,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "I类切口手术部位感染率",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:I类切口手术部位感染人次数/同期I类切口手术台次数×100%。",
+    "source": "病案首页"
+  },
+  {
+    "id": 10,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "单病种质量控制",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:符合单病种质量控制标准。",
+    "source": "病案首页"
+  },
+  {
+    "id": 11,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "大型医用设备检查阳性率",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:大型医用设备检查阳性数/同期大型医用设备检查人次数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 12,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "大型医用设备维修保养及质量控制管理",
+    "is_national_monitor": false,
+    "nature": "定性",
+    "calculation": "引导医院关注医用设备的维修保养和质量控制，配置合适维修人员和维修检测设备。评价内容包括配置合理维修人员和维修场地等。",
+    "source": "医院现场评审"
+  },
+  {
+    "id": 13,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "通过国家室间质量评价的临床检验项目数",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:医院临床检验项目中通过国家临床检验中心组织的室间质量评价项目数量。",
+    "source": "国家卫生健康委"
+  },
+  {
+    "id": 14,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "低风险组病例死亡率",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:低风险组死亡例数/低风险组病例数×100%。",
+    "source": "病案首页"
+  },
+  {
+    "id": 15,
+    "category_1": "医疗质量",
+    "category_2": "质量安全",
+    "name": "优质护理服务病房覆盖率",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:全院已经开展优质护理服务的病房总数/全院病房总数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 16,
+    "category_1": "医疗质量",
+    "category_2": "合理用药",
+    "name": "点评处方占处方总数的比例",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:点评处方数/处方总数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 17,
+    "category_1": "医疗质量",
+    "category_2": "合理用药",
+    "name": "抗菌药物使用强度(DDDs)",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:本年度住院患者抗菌药物消耗量(累计DDD数)/同期收治患者人天数×100。",
+    "source": "医院填报"
+  },
+  {
+    "id": 18,
+    "category_1": "医疗质量",
+    "category_2": "合理用药",
+    "name": "门诊患者基本药物处方占比",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:门诊使用基本药物人次数/同期门诊诊疗总人次数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 19,
+    "category_1": "医疗质量",
+    "category_2": "合理用药",
+    "name": "住院患者基本药物使用率",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:出院患者使用基本药物总人次数/同期出院总人次数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 20,
+    "category_1": "医疗质量",
+    "category_2": "合理用药",
+    "name": "基本药物采购品种数占比",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:医院采购基本药物品种数/医院同期采购药物品种总数×100%。",
+    "source": "省级招采平台"
+  },
+  {
+    "id": 21,
+    "category_1": "医疗质量",
+    "category_2": "合理用药",
+    "name": "国家组织药品集中采购中标药品使用比例",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:中标药品用量/同种药品用量×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 22,
+    "category_1": "医疗质量",
+    "category_2": "服务流程",
+    "name": "门诊患者平均预约诊疗率",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:预约诊疗人次数/总诊疗人次数×100% (急诊人次数不计入)。",
+    "source": "医院填报"
+  },
+  {
+    "id": 23,
+    "category_1": "医疗质量",
+    "category_2": "服务流程",
+    "name": "门诊患者预约后平均等待时间",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:门诊患者按预约时间到达医院后至进入诊室前的等待时间。",
+    "source": "医院填报"
+  },
+  {
+    "id": 24,
+    "category_1": "医疗质量",
+    "category_2": "服务流程",
+    "name": "电子病历应用功能水平分级",
+    "is_national_monitor": true,
+    "nature": "定性",
+    "calculation": "计算方法:按照国家卫生健康委电子病历应用功能水平分级标准评估。",
+    "source": "国家卫生健康委"
+  },
+  {
+    "id": 25,
+    "category_1": "运营效率",
+    "category_2": "资源效率",
+    "name": "每名执业医师日均住院工作负担",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:全年实际占用总床日数/医院平均执业 (助理)医师人数/365。",
+    "source": "医院填报"
+  },
+  {
+    "id": 26,
+    "category_1": "运营效率",
+    "category_2": "资源效率",
+    "name": "每百张病床药师人数",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:医院药师(包括药剂师和临床药师)总人数/医院实际开放床位数×100。",
+    "source": "医院填报"
+  },
+  {
+    "id": 27,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "门诊收入占医疗收入比例",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:门诊收入/医疗收入×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 28,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "门诊收入中来自医保基金的比例",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:门诊收入中来自医保基金的收入/门诊收入×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 29,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "住院收入占医疗收入比例",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:住院收入/医疗收入×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 30,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "住院收入中来自医保基金的比例",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:住院收入中来自医保基金的收入/住院收入×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 31,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "医疗服务收入(不含药品、耗材、检查检验收入)占医疗收入比例",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:医疗服务收入/医疗收入×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 32,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "辅助用药收入占比",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:辅助用药收入/药品总收入×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 33,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "人员支出占业务支出比重",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:人员支出/业务支出×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 34,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "万元收入能耗支出",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:年总能耗支出/年总收入×10000。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 35,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "收支结余",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:业务收支结余＋财政项目补助收支结转(余)＋科教项目收支结转(余)。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 36,
+    "category_1": "运营效率",
+    "category_2": "收支结构",
+    "name": "资产负债率",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:负债合计/资产合计×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 37,
+    "category_1": "运营效率",
+    "category_2": "费用控制",
+    "name": "医疗收入增幅",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:(本年度医疗收入－上一年度医疗收入)/上一年度医疗收入×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 38,
+    "category_1": "运营效率",
+    "category_2": "费用控制",
+    "name": "门诊次均费用增幅",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:(本年度门诊患者次均医药费用－上一年度门诊患者次均医药费用)/上一年度门诊患者次均医药费用×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 39,
+    "category_1": "运营效率",
+    "category_2": "费用控制",
+    "name": "门诊次均药品费用增幅",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:(本年度门诊患者次均药品费用－上一年度门诊患者次均药品费用)/上一年度门诊患者次均药品费用×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 40,
+    "category_1": "运营效率",
+    "category_2": "费用控制",
+    "name": "住院次均费用增幅",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:(本年度出院患者次均医药费用－上一年度出院患者次均医药费用)/上一年度出院患者次均医药费用×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 41,
+    "category_1": "运营效率",
+    "category_2": "费用控制",
+    "name": "住院次均药品费用增幅",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:(本年度出院患者次均药品费用－上一年度出院患者次均药品费用)/上一年度出院患者次均药品费用×100%。",
+    "source": "财务年报表"
+  },
+  {
+    "id": 42,
+    "category_1": "运营效率",
+    "category_2": "经济管理",
+    "name": "全面预算管理",
+    "is_national_monitor": false,
+    "nature": "定性",
+    "calculation": "计算方法:查阅文件资料。",
+    "source": "医院填报"
+  },
+  {
+    "id": 43,
+    "category_1": "运营效率",
+    "category_2": "经济管理",
+    "name": "规范设立总会计师",
+    "is_national_monitor": false,
+    "nature": "定性",
+    "calculation": "计算方法:查阅文件资料。",
+    "source": "医院填报"
+  },
+  {
+    "id": 44,
+    "category_1": "持续发展",
+    "category_2": "人员结构",
+    "name": "卫生技术人员职称结构",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:医院具有高级职称的医务人员数/全院同期医务人员总数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 45,
+    "category_1": "持续发展",
+    "category_2": "人员结构",
+    "name": "麻醉、儿科、重症、病理、中医医师占比",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:医院注册的麻醉、儿科、重症、病理、中医在岗医师数/全院同期医师总数。",
+    "source": "国家医疗机构、医师、护士电子化注册系统"
+  },
+  {
+    "id": 46,
+    "category_1": "持续发展",
+    "category_2": "人员结构",
+    "name": "医护比",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:医院注册医师总数/全院同期注册护士总数。",
+    "source": "国家医疗机构、医师、护士电子化注册系统"
+  },
+  {
+    "id": 47,
+    "category_1": "持续发展",
+    "category_2": "人才培养",
+    "name": "医院接受其他医院进修并返回原医院独立工作人数占比",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:医院接受其他医院进修半年及以上并返回原医院独立工作人数/医院同期招收进修总人数×100%。",
+    "source": "医院填报"
+  },
+  {
+    "id": 48,
+    "category_1": "持续发展",
+    "category_2": "人才培养",
+    "name": "医院住院医师首次参加医师资格考试通过率",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:本年度首次参加医师资格考试并通过的住院医师人数/同期首次参加医师资格考试的住院医师总人数×100%。",
+    "source": "国家卫生健康委"
+  },
+  {
+    "id": 49,
+    "category_1": "持续发展",
+    "category_2": "人才培养",
+    "name": "医院承担培养医学人才的工作成效",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:统计医院在医学人才培养方面的经费投入、临床带教教师和指导医师接受教育教学培训人次数等。",
+    "source": "医院填报"
+  },
+  {
+    "id": 50,
+    "category_1": "持续发展",
+    "category_2": "学科建设",
+    "name": "每百名卫生技术人员科研项目经费",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:本年度科研项目立项经费总金额/同期卫生技术人员总数×100。",
+    "source": "医院填报"
+  },
+  {
+    "id": 51,
+    "category_1": "持续发展",
+    "category_2": "学科建设",
+    "name": "每百名卫生技术人员科研成果转化金额",
+    "is_national_monitor": false,
+    "nature": "定量",
+    "calculation": "计算方法:本年度科技成果转化总金额/同期医院卫生技术人员总数×100。",
+    "source": "医院填报"
+  },
+  {
+    "id": 52,
+    "category_1": "持续发展",
+    "category_2": "信用建设",
+    "name": "公共信用综合评价等级",
+    "is_national_monitor": false,
+    "nature": "定性",
+    "calculation": "计算方法:按照公共信用综合评价规范进行评价。",
+    "source": "国家发展改革委"
+  },
+  {
+    "id": 53,
+    "category_1": "满意度评价",
+    "category_2": "患者满意度",
+    "name": "门诊患者满意度",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:门诊患者满意度调查得分。",
+    "source": "国家卫生健康委"
+  },
+  {
+    "id": 54,
+    "category_1": "满意度评价",
+    "category_2": "患者满意度",
+    "name": "住院患者满意度",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:住院患者满意度调查得分。",
+    "source": "国家卫生健康委"
+  },
+  {
+    "id": 55,
+    "category_1": "满意度评价",
+    "category_2": "医务人员满意度",
+    "name": "医务人员满意度",
+    "is_national_monitor": true,
+    "nature": "定量",
+    "calculation": "计算方法:医务人员满意度调查得分。",
+    "source": "国家卫生健康委"
+  }
+]
