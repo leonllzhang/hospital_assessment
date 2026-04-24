@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional, Dict
 
 from pydantic import BaseModel, Field
 
@@ -11,3 +11,5 @@ class ChatResponse(BaseModel):
     status: str
     text: str
     chart_option: dict[str, Any] | None = None
+    engine: str | None = None  # [新增]：用于告诉前端本次使用了哪个引擎
+

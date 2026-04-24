@@ -125,9 +125,11 @@ async function handleSubmit() {
       target.text = result.text;
       target.htmlText = marked.parse(result.text || "");
       target.chartOption = result.chart_option;
+      target.engine = result.engine; // [新增]：保存引擎标识
     } else {
       target.text = result.text;
       target.htmlText = `<span class="error-inline">${result.text}</span>`;
+      target.engine = null;
     }
   } catch (error) {
     const target = messages.value.find((item) => item.id === placeholderId);
