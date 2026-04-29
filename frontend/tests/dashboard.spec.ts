@@ -25,14 +25,22 @@ test.describe('院长驾驶舱 Agentic Workflow 端到端测试', () => {
     await expect(dashboardContainer).toBeVisible();
 
     // 6. 深入断言：验证 Vue 组件是否成功解析了后端的 56 项数据
-    // 验证头部评分区域
-    await expect(dashboardContainer.getByText('全院指标达标率')).toBeVisible();
+
     
-    // 验证四大维度 Tab 是否成功渲染
-    await expect(dashboardContainer.getByText('医疗质量')).toBeVisible();
-    await expect(dashboardContainer.getByText('运营效率')).toBeVisible();
-    await expect(dashboardContainer.getByText('持续发展')).toBeVisible();
-    await expect(dashboardContainer.getByText('满意度评价')).toBeVisible();
+    // 验证四大维度卡片是否成功渲染
+    await expect(dashboardContainer.getByText('医疗质量', { exact: true })).toBeVisible();
+    await expect(dashboardContainer.getByText('运营效率', { exact: true })).toBeVisible();
+    await expect(dashboardContainer.getByText('持续发展', { exact: true })).toBeVisible();
+    await expect(dashboardContainer.getByText('满意度评价', { exact: true })).toBeVisible();
+
+    // 验证卡片下方是否出现了类似 "14/14 项达标" 的动态统计文案
+    // 使用正则表达式模糊匹配，因为具体数字是后端随机生成的
+    const okText = dashboardContainer.getByText(/项达标/);
+    await expect(okText.first()).toBeVisible();
+
+    // 验证下方的详情列表区 Header 是否渲染
+    await expect(dashboardContainer.getByText(/指标详情/)).toBeVisible();
+    await expect(dashboardContainer.getByText(/个监控项/)).toBeVisible();
 
     // 验证环状图（SVG）是否被渲染
     const svgRings = dashboardContainer.locator('svg.ring-svg');
