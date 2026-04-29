@@ -1,107 +1,226 @@
 {
-  "outpatient_inpatient_ratio": {
-    "category": "医疗质量",
-    "subcategory": "功能定位",
-    "name": "门诊人次数与出院人次数比",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入挂号系统数据' as remark"
-  },
-  "downward_transfer_vol": {
-    "category": "医疗质量",
-    "subcategory": "功能定位",
-    "name": "下转患者人次数",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入双向转诊系统' as remark"
-  },
-  "day_surgery_ratio": {
-    "category": "医疗质量",
-    "subcategory": "功能定位",
-    "name": "日间手术占择期手术比例",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入日间手术标识' as remark"
-  },
-  "surgery_patient_ratio": {
-    "category": "医疗质量",
-    "subcategory": "功能定位",
-    "name": "出院患者手术占比",
-    "type": "定量",
-    "sql": "SELECT COUNT(*)*100.0/(SELECT COUNT(*) FROM surgery_records) as result, '出院患者手术占比(模拟)' as indicator FROM surgery_records WHERE 1=1 {t} {d}"
+  "op_surgery_ratio": {
+    "category": "医疗质量", "subcategory": "功能定位", "name": "出院患者手术占比", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'op_surgery_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
   "weichuang_ratio": {
-    "category": "医疗质量",
-    "subcategory": "功能定位",
-    "name": "出院患者微创手术占比",
-    "type": "定量",
-    "sql": "SELECT COUNT(CASE WHEN is_weichuang = 1 THEN 1 END)*100.0/NULLIF(COUNT(*), 0) as result, '微创手术占比(%)' as indicator FROM surgery_records WHERE 1=1 {t} {d}"
+    "category": "医疗质量", "subcategory": "功能定位", "name": "出院患者微创手术占比", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'weichuang_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
   "level4_ratio": {
-    "category": "医疗质量",
-    "subcategory": "功能定位",
-    "name": "出院患者四级手术比例",
-    "type": "定量",
-    "sql": "SELECT COUNT(CASE WHEN surgery_level = 4 THEN 1 END)*100.0/NULLIF(COUNT(*), 0) as result, '四级手术比例(%)' as indicator FROM surgery_records WHERE 1=1 {t} {d}"
+    "category": "医疗质量", "subcategory": "功能定位", "name": "出院患者四级手术比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'level4_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
-  "medical_service_income_ratio": {
-    "category": "运营效率",
-    "subcategory": "收支结构",
-    "name": "医疗服务收入占医疗收入比例",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入收费明细分类' as remark"
+  "cmi_value": {
+    "category": "医疗质量", "subcategory": "功能定位", "name": "医疗盈余或CMI值", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'cmi_value' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "rw_gt_2_ratio": {
+    "category": "医疗质量", "subcategory": "功能定位", "name": "RW≥2出院患者比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'rw_gt_2_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "day_surgery_ratio": {
+    "category": "医疗质量", "subcategory": "功能定位", "name": "日间手术占择期手术比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'day_surgery_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "drg_group_num": {
+    "category": "医疗质量", "subcategory": "质量安全", "name": "DRG组数", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'drg_group_num' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "complication_rate": {
+    "category": "医疗质量", "subcategory": "质量安全", "name": "手术患者并发症发生率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'complication_rate' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "type1_incision_infection": {
+    "category": "医疗质量", "subcategory": "质量安全", "name": "I类切口手术部位感染率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'type1_incision_infection' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "single_disease_quality": {
+    "category": "医疗质量", "subcategory": "质量安全", "name": "单病种质量控制", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'single_disease_quality' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "low_risk_mortality": {
+    "category": "医疗质量", "subcategory": "质量安全", "name": "低风险组病例死亡率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'low_risk_mortality' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "vte_prevention": {
+    "category": "医疗质量", "subcategory": "质量安全", "name": "VTE预防率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'vte_prevention' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "antibiotic_ddds": {
+    "category": "医疗质量", "subcategory": "合理用药", "name": "抗菌药物使用强度(DDDs)", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'antibiotic_ddds' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "national_drug_usage": {
+    "category": "医疗质量", "subcategory": "合理用药", "name": "国家组织集中采购中标药品使用比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'national_drug_usage' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "essential_drug_usage": {
+    "category": "医疗质量", "subcategory": "合理用药", "name": "基本药物处方占比", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'essential_drug_usage' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "aux_drug_income_ratio": {
+    "category": "医疗质量", "subcategory": "合理用药", "name": "辅助用药收入占比", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'aux_drug_income_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "op_antibiotic_ratio": {
+    "category": "医疗质量", "subcategory": "合理用药", "name": "门诊患者抗菌药物处方比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'op_antibiotic_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "ip_antibiotic_ratio": {
+    "category": "医疗质量", "subcategory": "合理用药", "name": "住院患者抗菌药物使用率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'ip_antibiotic_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "prescription_review": {
+    "category": "医疗质量", "subcategory": "合理用药", "name": "处方点评合格率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'prescription_review' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "blood_usage": {
+    "category": "医疗质量", "subcategory": "医疗服务", "name": "临床用血指标", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'blood_usage' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "lab_qa": {
+    "category": "医疗质量", "subcategory": "医疗服务", "name": "室间质控合格率（检验）", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'lab_qa' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "pathology_qa": {
+    "category": "医疗质量", "subcategory": "医疗服务", "name": "室间质控合格率（病理）", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'pathology_qa' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "op_appointment": {
+    "category": "医疗质量", "subcategory": "医疗服务", "name": "门诊预约诊疗率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'op_appointment' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "appointment_precision": {
+    "category": "医疗质量", "subcategory": "医疗服务", "name": "门诊预约精确到时段比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'appointment_precision' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "emr_level": {
+    "category": "医疗质量", "subcategory": "医疗服务", "name": "电子病历应用水平分级", "type": "定性",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'emr_level' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "info_standard": {
+    "category": "医疗质量", "subcategory": "医疗服务", "name": "医院信息互联互通标准化成熟度", "type": "定性",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'info_standard' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "medical_income_ratio": {
+    "category": "运营效率", "subcategory": "收支结构", "name": "医疗服务收入占医疗收入比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'medical_income_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
   "personnel_exp_ratio": {
-    "category": "运营效率",
-    "subcategory": "收支结构",
-    "name": "人员支出占业务支出比重",
-    "type": "定量",
-    "sql": "SELECT (SUM(personnel_expenditure)/SUM(medical_income))*100.0 as result, '人员支出占比(%)' as indicator FROM financial_records WHERE 1=1 {t}"
+    "category": "运营效率", "subcategory": "收支结构", "name": "人员支出占业务支出比重", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'personnel_exp_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "fixed_salary_ratio": {
+    "category": "运营效率", "subcategory": "收支结构", "name": "薪酬结余中提取的职工福利基金比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'fixed_salary_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "drug_income_ratio": {
+    "category": "运营效率", "subcategory": "收支结构", "name": "药品收入占医疗收入比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'drug_income_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "consumable_income_ratio": {
+    "category": "运营效率", "subcategory": "收支结构", "name": "卫生材料收入占医疗收入比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'consumable_income_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "op_fee_per_visit": {
+    "category": "运营效率", "subcategory": "费用控制", "name": "门诊次均费用", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'op_fee_per_visit' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "op_fee_growth": {
+    "category": "运营效率", "subcategory": "费用控制", "name": "门诊次均费用增幅", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'op_fee_growth' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "ip_fee_per_discharge": {
+    "category": "运营效率", "subcategory": "费用控制", "name": "住院次均费用", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'ip_fee_per_discharge' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "ip_fee_growth": {
+    "category": "运营效率", "subcategory": "费用控制", "name": "住院次均费用增幅", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'ip_fee_growth' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
   "asset_liability_ratio": {
-    "category": "运营效率",
-    "subcategory": "经济管理",
-    "name": "资产负债率",
-    "type": "定量",
-    "sql": "SELECT (SUM(liabilities)/SUM(assets))*100.0 as result, '资产负债率(%)' as indicator FROM financial_records WHERE 1=1 {t}"
+    "category": "运营效率", "subcategory": "资源效率", "name": "资产负债率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'asset_liability_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
-  "outpatient_satisfaction": {
-    "category": "满意度评价",
-    "subcategory": "患者满意度",
-    "name": "门诊患者满意度",
-    "type": "定量",
-    "sql": "SELECT AVG(outpatient_score) as result, '门诊满意度(分)' as indicator FROM satisfaction_records WHERE 1=1 {t}"
+  "medical_revenue_margin": {
+    "category": "运营效率", "subcategory": "资源效率", "name": "医疗收入结余率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'medical_revenue_margin' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
-  "inpatient_satisfaction": {
-    "category": "满意度评价",
-    "subcategory": "患者满意度",
-    "name": "住院患者满意度",
-    "type": "定量",
-    "sql": "SELECT AVG(inpatient_score) as result, '住院满意度(分)' as indicator FROM satisfaction_records WHERE 1=1 {t}"
+  "bed_turnover": {
+    "category": "运营效率", "subcategory": "资源效率", "name": "病床使用率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'bed_turnover' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "avg_length_of_stay": {
+    "category": "运营效率", "subcategory": "资源效率", "name": "出院患者平均住院日", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'avg_length_of_stay' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "inventory_turnover": {
+    "category": "运营效率", "subcategory": "资源效率", "name": "存货周转率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'inventory_turnover' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "receivable_turnover": {
+    "category": "运营效率", "subcategory": "资源效率", "name": "应收账款周转天数", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'receivable_turnover' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "energy_expense_ratio": {
+    "category": "运营效率", "subcategory": "资源效率", "name": "万元收入能耗支出", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'energy_expense_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "physician_bed_ratio": {
+    "category": "持续发展", "subcategory": "人员结构", "name": "医床比", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'physician_bed_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "nurse_bed_ratio": {
+    "category": "持续发展", "subcategory": "人员结构", "name": "床护比", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'nurse_bed_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "medical_tech_ratio": {
+    "category": "持续发展", "subcategory": "人员结构", "name": "卫技人员占比", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'medical_tech_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "senior_title_ratio": {
+    "category": "持续发展", "subcategory": "人员结构", "name": "高级职称人员比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'senior_title_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "talent_training": {
+    "category": "持续发展", "subcategory": "人才培养", "name": "接收下级医院进修人员总数", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'talent_training' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "student_ratio": {
+    "category": "持续发展", "subcategory": "人才培养", "name": "医师与住培/专培医师比例", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'student_ratio' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "research_fund_per_100": {
+    "category": "持续发展", "subcategory": "学科建设", "name": "每百名卫技人员科研经费", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'research_fund_per_100' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "national_project": {
+    "category": "持续发展", "subcategory": "学科建设", "name": "国家级科研项目数", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'national_project' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "tech_transfer": {
+    "category": "持续发展", "subcategory": "学科建设", "name": "科技成果转化金额", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'tech_transfer' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "sci_paper_impact": {
+    "category": "持续发展", "subcategory": "学科建设", "name": "发表高水平论文数", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'sci_paper_impact' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "op_satisfaction": {
+    "category": "满意度评价", "subcategory": "患者满意度", "name": "门诊患者满意度", "type": "定量",
+    "sql": "SELECT metric_value AS '当前得分', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'op_satisfaction' {t} {d} ORDER BY record_month DESC LIMIT 1"
+  },
+  "ip_satisfaction": {
+    "category": "满意度评价", "subcategory": "患者满意度", "name": "住院患者满意度", "type": "定量",
+    "sql": "SELECT metric_value AS '当前得分', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'ip_satisfaction' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
   "staff_satisfaction": {
-    "category": "满意度评价",
-    "subcategory": "医务人员满意度",
-    "name": "医务人员满意度",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入内部员工调查系统' as remark"
+    "category": "满意度评价", "subcategory": "医务人员满意度", "name": "医务人员满意度", "type": "定量",
+    "sql": "SELECT metric_value AS '当前得分', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'staff_satisfaction' {t} {d} ORDER BY record_month DESC LIMIT 1"
   },
-  "cmix": {
-    "category": "医疗质量",
-    "subcategory": "质量安全",
-    "name": "病例组合指数(CMI)",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入DRG/DIP结算系统' as remark"
-  },
-  "antibiotic_usage_intensity": {
-    "category": "医疗质量",
-    "subcategory": "合理用药",
-    "name": "抗菌药物使用强度(DDDs)",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入HIS药品消耗数据' as remark"
-  },
-  "research_fund_per_100_staff": {
-    "category": "持续发展",
-    "subcategory": "学科建设",
-    "name": "每百名卫生技术人员科研项目经费",
-    "type": "定量",
-    "sql": "SELECT 0 as result, '暂未接入科研管理系统' as remark"
+  "patient_complaint_rate": {
+    "category": "满意度评价", "subcategory": "医务人员满意度", "name": "医疗纠纷或投诉发生率", "type": "定量",
+    "sql": "SELECT metric_value AS '当前值', target_value AS '考核目标', unit AS '单位', record_month AS '统计月份' FROM kpi_monthly_results WHERE metric_code = 'patient_complaint_rate' {t} {d} ORDER BY record_month DESC LIMIT 1"
   }
 }

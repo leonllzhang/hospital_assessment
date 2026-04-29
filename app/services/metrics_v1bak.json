@@ -1,0 +1,107 @@
+{
+  "outpatient_inpatient_ratio": {
+    "category": "医疗质量",
+    "subcategory": "功能定位",
+    "name": "门诊人次数与出院人次数比",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入挂号系统数据' as remark"
+  },
+  "downward_transfer_vol": {
+    "category": "医疗质量",
+    "subcategory": "功能定位",
+    "name": "下转患者人次数",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入双向转诊系统' as remark"
+  },
+  "day_surgery_ratio": {
+    "category": "医疗质量",
+    "subcategory": "功能定位",
+    "name": "日间手术占择期手术比例",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入日间手术标识' as remark"
+  },
+  "surgery_patient_ratio": {
+    "category": "医疗质量",
+    "subcategory": "功能定位",
+    "name": "出院患者手术占比",
+    "type": "定量",
+    "sql": "SELECT COUNT(*)*100.0/(SELECT COUNT(*) FROM surgery_records) as result, '出院患者手术占比(模拟)' as indicator FROM surgery_records WHERE 1=1 {t} {d}"
+  },
+  "weichuang_ratio": {
+    "category": "医疗质量",
+    "subcategory": "功能定位",
+    "name": "出院患者微创手术占比",
+    "type": "定量",
+    "sql": "SELECT COUNT(CASE WHEN is_weichuang = 1 THEN 1 END)*100.0/NULLIF(COUNT(*), 0) as result, '微创手术占比(%)' as indicator FROM surgery_records WHERE 1=1 {t} {d}"
+  },
+  "level4_ratio": {
+    "category": "医疗质量",
+    "subcategory": "功能定位",
+    "name": "出院患者四级手术比例",
+    "type": "定量",
+    "sql": "SELECT COUNT(CASE WHEN surgery_level = 4 THEN 1 END)*100.0/NULLIF(COUNT(*), 0) as result, '四级手术比例(%)' as indicator FROM surgery_records WHERE 1=1 {t} {d}"
+  },
+  "medical_service_income_ratio": {
+    "category": "运营效率",
+    "subcategory": "收支结构",
+    "name": "医疗服务收入占医疗收入比例",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入收费明细分类' as remark"
+  },
+  "personnel_exp_ratio": {
+    "category": "运营效率",
+    "subcategory": "收支结构",
+    "name": "人员支出占业务支出比重",
+    "type": "定量",
+    "sql": "SELECT (SUM(personnel_expenditure)/SUM(medical_income))*100.0 as result, '人员支出占比(%)' as indicator FROM financial_records WHERE 1=1 {t}"
+  },
+  "asset_liability_ratio": {
+    "category": "运营效率",
+    "subcategory": "经济管理",
+    "name": "资产负债率",
+    "type": "定量",
+    "sql": "SELECT (SUM(liabilities)/SUM(assets))*100.0 as result, '资产负债率(%)' as indicator FROM financial_records WHERE 1=1 {t}"
+  },
+  "outpatient_satisfaction": {
+    "category": "满意度评价",
+    "subcategory": "患者满意度",
+    "name": "门诊患者满意度",
+    "type": "定量",
+    "sql": "SELECT AVG(outpatient_score) as result, '门诊满意度(分)' as indicator FROM satisfaction_records WHERE 1=1 {t}"
+  },
+  "inpatient_satisfaction": {
+    "category": "满意度评价",
+    "subcategory": "患者满意度",
+    "name": "住院患者满意度",
+    "type": "定量",
+    "sql": "SELECT AVG(inpatient_score) as result, '住院满意度(分)' as indicator FROM satisfaction_records WHERE 1=1 {t}"
+  },
+  "staff_satisfaction": {
+    "category": "满意度评价",
+    "subcategory": "医务人员满意度",
+    "name": "医务人员满意度",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入内部员工调查系统' as remark"
+  },
+  "cmix": {
+    "category": "医疗质量",
+    "subcategory": "质量安全",
+    "name": "病例组合指数(CMI)",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入DRG/DIP结算系统' as remark"
+  },
+  "antibiotic_usage_intensity": {
+    "category": "医疗质量",
+    "subcategory": "合理用药",
+    "name": "抗菌药物使用强度(DDDs)",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入HIS药品消耗数据' as remark"
+  },
+  "research_fund_per_100_staff": {
+    "category": "持续发展",
+    "subcategory": "学科建设",
+    "name": "每百名卫生技术人员科研项目经费",
+    "type": "定量",
+    "sql": "SELECT 0 as result, '暂未接入科研管理系统' as remark"
+  }
+}
