@@ -4,6 +4,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes.chat import router as chat_router
+from app.api.routes.tools import router as tools_router
 from app.core.config import FRONTEND_DIST_DIR, settings
 
 
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 
 app.include_router(chat_router, prefix=settings.api_prefix)
+app.include_router(tools_router, prefix=settings.api_prefix)
 
 assets_dir = FRONTEND_DIST_DIR / "assets"
 if assets_dir.exists():
