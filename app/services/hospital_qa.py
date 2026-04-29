@@ -221,20 +221,34 @@ class HospitalActionServer:
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
-    # ==========================================================
+   # ==========================================================
     # 核心工具 2：动态探索查询 (供 Agent 自由探索底层流水)
     # ==========================================================
     def execute_ad_hoc_sql(self, sql_query: str) -> Dict[str, Any]:
-        """危险动作：执行 Agent 传来的裸 SQL，建议后续增加 SELECT 限制"""
+        """危险动作：执行 Agent 传来的裸 SQL，进行严格安检"""
+        # 1. 清洗 SQL，转大写以方便匹配
+        clean_sql = sql_query.strip().upper()
+        
+        # 2. 绝对物理拦截：禁止危险命令
+        forbidden_keywords = ["DROP", "DELETE", "UPDATE", "INSERT", "ALTER", "TRUNCATE"]
+        
+        # 如果不是以 SELECT 开头（带 CTE 的 WITH 也可以放行，这里为了安全强制 SELECT），或者包含危险词汇
+        if not clean_sql.startswith("SELECT") or any(kw in clean_sql for kw in forbidden_keywords):
+            return {
+                "status": "error", 
+                "message": "系统安全策略已拦截：该操作包含非查询类的危险指令，或不符合数据探索规范。"
+            }
+
+        # 3. 安全执行
         try:
             cursor = self.sqlite_conn.cursor()
-            cursor.execute(sql_query)
+            cursor.execute(sql_query) # 注意：执行原始的 sql_query，保留原本的大小写
             columns = [column[0] for column in cursor.description]
             data = [dict(zip(columns, row)) for row in cursor.fetchall()]
-            return {"status": "success", "executed_sql": sql_query, "data": data[:50]} # 限制返回条数
+            return {"status": "success", "executed_sql": sql_query, "data": data[:50]} # 限制返回条数，防止炸内存
         except Exception as e:
             return {"status": "error", "message": f"SQL执行失败: {str(e)}"}
-
+        
     # ==========================================================
     # 核心工具 3：获取全院驾驶舱大屏数据
     # ==========================================================
