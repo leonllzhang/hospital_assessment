@@ -1,25 +1,14 @@
 <template>
-  <main class="app-shell">
-    <section class="hero-panel">
-      <p class="hero-kicker">Hospital QA System</p>
-      <h1>三级公立医院考核指标问答平台</h1>
-      <p class="hero-description">
-        前端已改为 Vue 3 工程化结构，后端继续使用 FastAPI，保留现有知识图谱与联动数据问答接口。
-      </p>
-      <div class="hero-tags">
-        <span>制度逻辑问答</span>
-        <span>联动业务数据</span>
-        <span>ECharts 可视化</span>
-      </div>
-    </section>
+  <main class="full-screen-app">
+    <!-- 删除了原有的 hero-panel，直接让对话框成为视觉中心 -->
 
-    <section class="chat-panel">
+    <section class="chat-container">
       <header class="chat-header">
         <div>
-          <p class="panel-label">对话工作台</p>
+          <p class="panel-label">HOSPITAL QA SYSTEM</p>
           <h2>院长指标分析助手</h2>
         </div>
-        <span class="status-chip">{{ isLoading ? "分析中" : "待命" }}</span>
+        <span class="status-chip">{{ isLoading ? "思考分析中..." : "系统待命" }}</span>
       </header>
 
       <div ref="chatBoxRef" class="chat-box">
@@ -36,13 +25,13 @@
           class="composer-input"
           rows="3"
           :disabled="isLoading"
-          placeholder="请输入问题，例如：2026年3月骨科和普外科的微创手术占比对比"
+          placeholder="请输入问题，例如：打开院长驾驶舱，查看全院核心指标"
           @keydown.enter.exact.prevent="handleSubmit"
         ></textarea>
         <div class="composer-actions">
-          <p class="composer-hint">可查询制度定义、公式口径和具体业务数据。</p>
+          <p class="composer-hint">💡 提示：可查询制度定义、公式口径和具体业务数据，支持唤醒大屏。</p>
           <button class="send-button" type="submit" :disabled="isLoading || !trimmedInput">
-            {{ isLoading ? "思考中..." : "发送问题" }}
+            {{ isLoading ? "发送中..." : "发送指令" }}
           </button>
         </div>
       </form>
@@ -62,7 +51,7 @@ marked.setOptions({
 });
 
 const welcomeText =
-  "院长您好。您可以询问 **制度逻辑**，例如“微创手术占比怎么算”；也可以直接查询 **业务数据**，例如“2026年3月骨科和普外科的手术对比”。";
+  "院长您好。您可以询问 **制度逻辑**，例如“微创手术占比怎么算”；也可以直接查询 **业务数据**，或者发送指令 **“打开院长驾驶舱”** 唤醒全院指标大屏。";
 
 const chatBoxRef = ref(null);
 const userInput = ref("");
@@ -125,8 +114,9 @@ async function handleSubmit() {
       target.text = result.text;
       target.htmlText = marked.parse(result.text || "");
       target.chartOption = result.chart_option;
-      target.engine = result.engine; // [新增]：保存引擎标识
-      target.dashboardData = result.dashboard_data; // [新增] 保存大屏数据
+      target.engine = result.engine;
+      target.dashboardData = result.dashboard_data;
+      target.alertData = result.alert_data;
     } else {
       target.text = result.text;
       target.htmlText = `<span class="error-inline">${result.text}</span>`;
@@ -145,3 +135,161 @@ async function handleSubmit() {
   }
 }
 </script>
+
+<style scoped>
+/* ========== 全局布局：居中沉浸式 ========== */
+.full-screen-app {
+  display: flex;
+  justify-content: center; /* 让聊天窗口水平居中 */
+  align-items: center; /* 垂直居中（带有一点阴影留白） */
+  width: 100vw;
+  height: 100vh;
+  background-color: #f3f5f9; /* 浅色背景托底，凸显主聊天区 */
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 20px; /* 屏幕边缘留白 */
+}
+
+/* ========== 核心聊天容器 ========== */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px; /* 平时聊天的最佳阅读宽度 */
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 16px; /* 圆角让视觉更柔和 */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08); /* 高级软阴影 */
+  overflow: hidden;
+  /* 核心动画：宽度变化时的丝滑过渡 */
+  transition: max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 【黑科技】：如果聊天流里渲染了大屏组件，自动撑宽整个 App 容器 */
+.chat-container:has(.dean-dashboard-container) {
+  max-width: 1400px;
+}
+
+/* ========== 头部样式 ========== */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  z-index: 10;
+}
+
+.chat-header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.panel-label {
+  margin: 0 0 4px 0;
+  font-size: 12px;
+  color: #94a3b8;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+
+.status-chip {
+  font-size: 12px;
+  padding: 6px 14px;
+  background: #eff6ff;
+  color: #3b82f6;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+/* ========== 消息对话区 ========== */
+.chat-box {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px;
+  scroll-behavior: smooth;
+  background-color: #fafbfc; /* 对话区稍微带点极浅灰，区分输入框 */
+}
+
+/* 隐藏原生滚动条使 UI 更极客 */
+.chat-box::-webkit-scrollbar { width: 6px; }
+.chat-box::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.chat-box::-webkit-scrollbar-track { background: transparent; }
+
+/* ========== 底部输入法区 ========== */
+.composer {
+  padding: 20px 30px;
+  background: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.composer-input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  transition: all 0.3s;
+  background-color: #f8fafc;
+}
+
+.composer-input:focus {
+  border-color: #3b82f6;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.composer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.composer-hint {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.send-button {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.send-button:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.send-button:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* 兼容内联样式 */
+:deep(.loading-inline) { color: #8b5cf6; animation: pulse 1.5s infinite; }
+:deep(.error-inline) { color: #ef4444; }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+</style>

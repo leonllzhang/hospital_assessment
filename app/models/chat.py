@@ -12,4 +12,5 @@ class ChatResponse(BaseModel):
     chart_option: dict[str, Any] | None = None
     engine: str | None = None  # [新增]：用于告诉前端本次使用了哪个引擎
     dashboard_data: dict[str, Any] | None = None  # [新增] 驾驶舱专属数据
+    alert_data: dict[str, Any] | None = None  # [新增] 预警摘要数据
 

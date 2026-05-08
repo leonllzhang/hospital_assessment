@@ -1,4 +1,8 @@
 # app/services/hospital_qa.py
+import sys
+# Windows 终端 GBK 无法输出 emoji，强制在模块导入时设置 UTF-8
+sys.stdout.reconfigure(encoding='utf-8')
+
 import os
 import json
 import sqlite3
@@ -8,6 +12,7 @@ from openai import OpenAI
 
 from neo4j import GraphDatabase
 from app.core.config import settings
+from app.services.alert_engine import AlertEngine, NEGATIVE_CODES
 
 def init_mock_db(db_path: str) -> sqlite3.Connection:
     """初始化底层的原子数据表 (用于探索) 和 KPI 事实表 (用于标准大屏)"""
@@ -162,9 +167,14 @@ def init_mock_db(db_path: str) -> sqlite3.Connection:
             mock_data.append((month_str, dim, code, name, val, target, unit))
             
     cursor.executemany(
-        "INSERT INTO kpi_monthly_results (record_month, dimension, metric_code, metric_name, metric_value, target_value, unit) VALUES (?, ?, ?, ?, ?, ?, ?)", 
+        "INSERT INTO kpi_monthly_results (record_month, dimension, metric_code, metric_name, metric_value, target_value, unit) VALUES (?, ?, ?, ?, ?, ?, ?)",
         mock_data
     )
+
+    # ======== 3. 红绿灯预警系统表 ========
+    AlertEngine.create_tables(cursor)
+    AlertEngine.seed_rules(cursor, kpi_defs, negative_codes)
+
     conn.commit()
     return conn
 
@@ -184,12 +194,50 @@ class HospitalActionServer:
         self.sqlite_conn = init_mock_db(settings.sqlite_db_path)
         # 3. 加载标准指标库
         self.metrics_registry = self._load_metrics_registry()
+        # 4. 初始化预警引擎
+        self.alert_engine = AlertEngine(self.sqlite_conn, action_server=self)
+        # 5. 对最新月份执行一次自动巡检
+        try:
+            self.alert_engine.patrol_latest()
+            print("✅ 预警引擎初始化完成，已对最新月份执行自动巡检。")
+        except Exception as e:
+            print(f"⚠️ 预警引擎自动巡检异常（首次启动正常现象）: {e}")
 
     def _load_metrics_registry(self) -> dict:
         path = os.path.join(os.path.dirname(__file__), 'metrics.json')
         try:
             with open(path, 'r', encoding='utf-8') as f: return json.load(f)
         except Exception: return {}
+
+    # ==========================================================
+    # 预警引擎辅助方法
+    # ==========================================================
+    def _get_latest_month(self) -> str:
+        cursor = self.sqlite_conn.cursor()
+        cursor.execute("SELECT MAX(record_month) FROM kpi_monthly_results")
+        return cursor.fetchone()[0]
+
+    def run_alert_patrol(self, month: str = "") -> dict:
+        """运行数据巡检并返回结果"""
+        if not month:
+            month = self._get_latest_month()
+        alerts = self.alert_engine.patrol(month)
+        summary = self.alert_engine.get_alert_summary(month)
+        return {
+            "status": "success",
+            "month": month,
+            "alert_count": len(alerts),
+            "alerts": alerts,
+            "summary": summary,
+        }
+
+    def get_alert_dashboard(self, month: str = "") -> dict:
+        """获取预警面板数据"""
+        if not month:
+            month = self._get_latest_month()
+        alerts = self.alert_engine.get_active_alerts(month)
+        summary = self.alert_engine.get_alert_summary(month)
+        return {"status": "success", "month": month, "alerts": alerts, "summary": summary}
 
     # ==========================================================
     # 核心工具 1：标准国考指标查询 (100% 避免幻觉的白名单 SQL)
@@ -261,17 +309,25 @@ class HospitalActionServer:
             cursor.execute("SELECT dimension, metric_code, metric_name, metric_value, target_value, unit FROM kpi_monthly_results WHERE record_month = ?", (latest_month,))
             
             dashboard_data = {"医疗质量": [], "运营效率": [], "持续发展": [], "满意度评价": []}
-            negative_codes = ["complication_rate", "asset_liability_ratio"]
 
             for dim, code, name, val, target, unit in cursor.fetchall():
                 if dim not in dashboard_data: continue
-                is_ok = (val <= target) if code in negative_codes else (val >= target)
+                is_neg = code in NEGATIVE_CODES
+                is_ok = (val <= target) if is_neg else (val >= target)
                 dashboard_data[dim].append({
-                    "code": code, "name": name, "value": val, "target": target, 
-                    "unit": unit, "is_ok": is_ok, "is_negative": code in negative_codes
+                    "code": code, "name": name, "value": val, "target": target,
+                    "unit": unit, "is_ok": is_ok, "is_negative": is_neg
                 })
 
-            return {"status": "success", "month": latest_month, "dashboard_data": dashboard_data}
+            # 附上预警摘要（供驾驶舱前端红黄灯展示）
+            result = {"status": "success", "month": latest_month, "dashboard_data": dashboard_data}
+            try:
+                alert_summary = self.alert_engine.get_alert_summary(latest_month)
+                result["alert_summary"] = alert_summary
+            except Exception:
+                result["alert_summary"] = {"total": 0, "red": 0, "yellow": 0,
+                                           "by_dimension": {}, "month": latest_month}
+            return result
         except Exception as e:
             return {"status": "error", "message": str(e)}
 
@@ -297,16 +353,21 @@ class LiteAgentController:
         self.model_name = settings.model_name
 
         # 【新增】：设定 Agent 的人设与绝对规则 (System Persona)
-        self.system_prompt = """
-        你是一位资深、严谨的三级公立医院绩效考核（国考）数据分析专家兼院长助理。
-        你的核心任务是协助医院管理者精准调取、分析运营数据。
-
-        【绝对行为准则】：
-        1. 必须调用系统提供的 Tools 获取数据，严禁凭空捏造任何医疗、财务数据（零幻觉）。
-        2. 如果用户询问与“医院管理、绩效考核、医疗数据”完全无关的问题（如天气、娱乐、写诗等），请礼貌且坚决地拒绝，并引导用户回到医院数据分析的场景。
-        3. 回答要有逻辑、分段落，适当使用加粗（Markdown）突出核心指标数值。
-        4. 在解释数据时，请站在“医院高质量发展”的角度，给出简短的专业洞察（例如提示某些指标的改善空间）。
-        """
+        self.system_prompt = (
+            "你是一位资深、严谨的三级公立医院绩效考核（国考）数据分析专家兼院长助理。\n"
+            "你的核心任务是协助医院管理者精准调取、分析运营数据。\n\n"
+            "【绝对行为准则】：\n"
+            "1. 必须调用系统提供的 Tools 获取数据，严禁凭空捏造任何医疗、财务数据（零幻觉）。\n"
+            "2. 如果用户询问与「医院管理、绩效考核、医疗数据」完全无关的问题（如天气、娱乐、写诗等），"
+            "请礼貌且坚决地拒绝，并引导用户回到医院数据分析的场景。\n"
+            "3. 回答要有逻辑、分段落，适当使用加粗（Markdown）突出核心指标数值。\n"
+            "4. 在解释数据时，请站在「医院高质量发展」的角度，给出简短的专业洞察"
+            "（例如提示某些指标的改善空间）。\n\n"
+            "【预警系统集成】：\n"
+            "你拥有一个「红绿灯异动预警系统」，可以通过 query_alerts 工具查看当前月份"
+            "哪些指标触发了红灯（严重偏离）或黄灯（趋势偏离）预警。\n"
+            "当用户询问某个具体指标时，请主动检查该指标是否有预警，并在回答中提示。"
+        )
 
         # 定义发给大模型的工具清单
         self.tools = [
@@ -348,6 +409,20 @@ class LiteAgentController:
                     "name": "open_dean_dashboard",
                     "description": "当用户要求'查看全院大屏'、'打开院长驾驶舱'时调用。",
                     "parameters": {"type": "object", "properties": {}}
+                }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "query_alerts",
+                    "description": "查看当前月份有哪些考核指标触发了异常预警（红灯=严重偏离目标，黄灯=趋势偏离）。可用于主动发现风险。",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "month": {"type": "string", "description": "月份，如'2026-03'，不传则查最新月"}
+                        },
+                        "required": []
+                    }
                 }
             }
         ]
@@ -438,9 +513,23 @@ class LiteAgentController:
             if func_name == "query_core_kpi":
                 code = self._fuzzy_match_metric(args.get("metric_keyword"))
                 if not code:
-                    final_result = {"text": f"系统未能在国考标准库中找到与“{args.get('metric_keyword')}”高度匹配的指标。建议您使用标准的医学术语，或者询问具体的底层业务数据（如：上个月做了几台手术）。"}
+                    final_result = {"text": f"系统未能在国考标准库中找到与「{args.get('metric_keyword')}」高度匹配的指标。建议您使用标准的医学术语，或者询问具体的底层业务数据（如：上个月做了几台手术）。"}
                 data = self.action_server.execute_core_kpi(code, args.get("time_period"))
                 final_result = self._summarize_results(user_query, data)
+
+                # 主动检查预警
+                if code:
+                    try:
+                        query_month = args.get("time_period") or self.action_server._get_latest_month()
+                        alerts = self.action_server.alert_engine.get_alerts_for_metric(code, query_month)
+                        if alerts:
+                            level_label = "红灯预警" if alerts[0]["alert_level"] == "red" else "黄灯预警"
+                            final_result["text"] += (
+                                f"\n\n⚠️ **{level_label}**: 该指标当前值偏离目标 {alerts[0]['deviation_pct']}%，"
+                                f"已触发异常预警系统。建议您关注并采取措施。"
+                            )
+                    except Exception:
+                        pass
                 
             elif func_name == "query_ad_hoc_sql":
                 data = self.action_server.execute_ad_hoc_sql(args.get("sql_query"))
@@ -454,8 +543,20 @@ class LiteAgentController:
                 final_result = {
                     "text": "✅ 院长您好，已为您自动汇总全院56项国考核心指标数据。请在下方【绩效考核驾驶舱】中审阅。图中高亮部分为本月待改进指标，请重点关注。",
                     "dashboard_data": data.get("dashboard_data"),
-                    "engine": "dashboard_agent"
+                    "engine": "dashboard_agent",
+                    "alert_data": data.get("alert_summary"),
                 }
+
+            elif func_name == "query_alerts":
+                month = args.get("month", "") or self.action_server._get_latest_month()
+                alerts = self.action_server.alert_engine.get_active_alerts(month)
+                summary = self.action_server.alert_engine.get_alert_summary(month)
+                if not alerts:
+                    final_result = {"text": f"✅ {month} 所有指标均在正常范围内，无预警。", "engine": "alert_check"}
+                else:
+                    context = {"month": month, "alert_count": len(alerts),
+                               "summary": summary, "alerts": alerts}
+                    final_result = self._summarize_results(user_query, context)
         else:
             # Step 3: 如果不需要工具（闲聊或超纲问题），系统会基于 System Prompt 兜底回复
             print("💬 Agent 决定直接回复 (触发闲聊或拦截机制)")

@@ -6,7 +6,7 @@
       
       <ChartCard v-if="message.chartOption" :option="message.chartOption" />
 
-      <DeanDashboard v-if="message.dashboardData" :data="message.dashboardData" />
+      <DeanDashboard v-if="message.dashboardData" :data="message.dashboardData" :alerts="message.alertData || []" />
 
       <div v-if="!isUser && message.engine" class="engine-badge" style="margin-top: 12px; font-size: 12px; border-top: 1px solid #eee; padding-top: 8px;">
         <span v-if="message.engine === 'core_kpi'" style="color: #67C23A;">

@@ -1,3 +1,4 @@
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
@@ -6,7 +7,11 @@ from fastapi.staticfiles import StaticFiles
 from app.api.routes.chat import router as chat_router
 from app.api.routes.tools import router as tools_router
 from app.core.config import FRONTEND_DIST_DIR, settings
+from app.api.routes import report
+from app.api.routes.alert import router as alert_router
 
+# Windows 终端默认 GBK 无法输出 emoji，强制使用 UTF-8
+sys.stdout.reconfigure(encoding='utf-8')
 
 app = FastAPI(title=settings.app_name)
 
@@ -20,10 +25,13 @@ app.add_middleware(
 
 app.include_router(chat_router, prefix=settings.api_prefix)
 app.include_router(tools_router, prefix=settings.api_prefix)
+app.include_router(report.router, prefix=settings.api_prefix + "/report", tags=["Report"])
+app.include_router(alert_router, prefix=settings.api_prefix)
 
 assets_dir = FRONTEND_DIST_DIR / "assets"
 if assets_dir.exists():
     app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
 
 
 @app.get("/health")

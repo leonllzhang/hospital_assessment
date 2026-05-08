@@ -7,7 +7,7 @@ from neo4j import GraphDatabase
 # Neo4j 配置
 NEO4J_URI = "bolt://localhost:7687"
 NEO4J_USER = "neo4j"
-NEO4J_PASSWORD = "neo4jadmin"
+NEO4J_PASSWORD = "neo4j@1234"
 
 # 大模型 API 配置 (这里以调用兼容 OpenAI 格式的本地 Ollama/vLLM 或 API 为例)
 # 如果你用第三方云 API，填入对应的 BASE_URL 和 API_KEY

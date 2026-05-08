@@ -4,7 +4,7 @@ from neo4j import GraphDatabase
 # Neo4j 数据库连接配置 (请根据您的实际环境修改密码)
 URI = "bolt://localhost:7687"
 USER = "neo4j"
-PASSWORD = "neo4jadmin"
+PASSWORD = "neo4j@1234"
 
 def load_data(file_path):
     """读取 JSON 数据文件"""
