@@ -1,12 +1,9 @@
 # app/services/report_generator.py
 import sqlite3
-import os
 from typing import Dict, Any, List, Optional
 from openai import OpenAI
-from dotenv import load_dotenv
 from markdown_it import MarkdownIt
-
-load_dotenv()
+from app.core.config import settings
 
 # 初始化 Markdown → HTML 渲染器（GitHub Flavored Markdown）
 _md = MarkdownIt("commonmark", {"linkify": False}).enable(["table", "strikethrough"])
@@ -24,15 +21,15 @@ NEGATIVE_CODES = [
 class MonthlyReportGenerator:
     def __init__(self, db_path: str):
         self.db_path = db_path
-        api_key = os.getenv("DASHSCOPE_API_KEY")
+        api_key = settings.dashscope_api_key
         if not api_key:
-            raise ValueError("未找到 DASHSCOPE_API_KEY，请检查 .env 文件是否配置正确。")
-        # 同样调用我们配置好的模型（建议这里用长文本生成能力好的模型，如 qwen-max 或 gpt-4o）
+            key_name = "DEEPSEEK_API_KEY" if settings.llm_provider == "deepseek" else "DASHSCOPE_API_KEY"
+            raise ValueError(f"未找到 {key_name}，请检查 .env 文件是否配置正确。")
         self.client = OpenAI(
             api_key=api_key,
-            base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+            base_url=settings.dashscope_base_url,
         )
-        self.model_name = "qwen-max"
+        self.model_name = settings.model_name
 
     def _fetch_month_data(self, target_month: str) -> Dict[str, Any]:
         """从数据库提取全院指标，并进行初步的红黑榜计算"""

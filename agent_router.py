@@ -13,15 +13,20 @@ NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
 
-API_KEY = os.getenv("DASHSCOPE_API_KEY")
-
-# 通义千问 (DashScope) 或其他兼容 OpenAI 格式的 API 密钥
-API_KEY = "sk-9a504b4c146847a4a3dba3c9c951ded4"
-BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-MODEL_NAME = "qwen-plus"
+# ================= LLM 配置（支持 qwen / deepseek） =================
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "qwen").lower()
+LLM_BASE_URL = os.getenv("LLM_BASE_URL") or (
+    "https://api.deepseek.com" if LLM_PROVIDER == "deepseek"
+    else "https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
+LLM_LLM_MODEL_NAME = os.getenv("LLM_LLM_MODEL_NAME") or (
+    "deepseek-chat" if LLM_PROVIDER == "deepseek"
+    else "qwen-plus"
+)
+LLM_API_KEY = os.getenv("DEEPSEEK_API_KEY") if LLM_PROVIDER == "deepseek" else os.getenv("DASHSCOPE_API_KEY")
 
 # ================= 初始化 =================
-client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
+client = OpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
 # 定义我们刚刚建好的图谱的 Schema (Schema 注入，防止大模型乱编 Cypher)
@@ -59,7 +64,7 @@ def intent_router(user_query):
     用户提问: "{user_query}"
     """
     response = client.chat.completions.create(
-        model=MODEL_NAME,
+        model=LLM_MODEL_NAME,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1,
         response_format={"type": "json_object"}
@@ -85,7 +90,7 @@ def text_to_cypher(user_query):
     用户提问: "{user_query}"
     """
     response = client.chat.completions.create(
-        model=MODEL_NAME,
+        model=LLM_MODEL_NAME,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.1
     )
@@ -118,7 +123,7 @@ def execute_cypher_and_generate_answer(user_query, cypher_query):
     请结合上述数据，用专业、清晰、自然的人类语言回答用户的问题。如果查出的数据为空，请如实告知。
     """
     response = client.chat.completions.create(
-        model=MODEL_NAME,
+        model=LLM_MODEL_NAME,
         messages=[{"role": "user", "content": prompt}],
         temperature=0.4
     )

@@ -17,16 +17,25 @@ NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
 
-API_KEY = os.getenv("DASHSCOPE_API_KEY")
-BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-MODEL_NAME = "qwen-plus"
+# ================= LLM 配置（支持 qwen / deepseek） =================
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "qwen").lower()
+LLM_BASE_URL = os.getenv("LLM_BASE_URL") or (
+    "https://api.deepseek.com" if LLM_PROVIDER == "deepseek"
+    else "https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
+LLM_LLM_MODEL_NAME = os.getenv("LLM_LLM_MODEL_NAME") or (
+    "deepseek-chat" if LLM_PROVIDER == "deepseek"
+    else "qwen-plus"
+)
+LLM_API_KEY = os.getenv("DEEPSEEK_API_KEY") if LLM_PROVIDER == "deepseek" else os.getenv("DASHSCOPE_API_KEY")
 
 # 安全性检查
-if not API_KEY or not NEO4J_PASSWORD:
-    raise ValueError("🚨 启动失败：请确保在 .env 文件中配置了 DASHSCOPE_API_KEY 和 NEO4J_PASSWORD！")
+required_key_name = "DEEPSEEK_API_KEY" if LLM_PROVIDER == "deepseek" else "DASHSCOPE_API_KEY"
+if not LLM_API_KEY or not NEO4J_PASSWORD:
+    raise ValueError(f"🚨 启动失败：请确保在 .env 文件中配置了 {required_key_name} 和 NEO4J_PASSWORD！")
 
 # ================= 初始化客户端 =================
-client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
+client = OpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
 neo4j_driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
 # ================= 1. 模拟底层业务数据库 (SQLite) =================
@@ -131,7 +140,7 @@ def intent_router(user_query):
     提问: "{user_query}"
     """
     response = client.chat.completions.create(
-        model=MODEL_NAME, messages=[{"role": "user", "content": prompt}],
+        model=LLM_MODEL_NAME, messages=[{"role": "user", "content": prompt}],
         temperature=0.1, response_format={"type": "json_object"}
     )
     return json.loads(response.choices[0].message.content.strip())
@@ -139,7 +148,7 @@ def intent_router(user_query):
 def text_to_cypher(user_query):
     """【分支 A】转换为 Neo4j 图谱查询语言"""
     prompt = f"根据Schema: {GRAPH_SCHEMA}\n将提问转为Cypher。提问: {user_query}\n只输出Cypher代码本身。"
-    res = client.chat.completions.create(model=MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=0)
+    res = client.chat.completions.create(model=LLM_MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=0)
     return re.sub(r'```(cypher)?|```', '', res.choices[0].message.content).strip()
 
 def text_to_sql(user_query):
@@ -156,7 +165,7 @@ def text_to_sql(user_query):
     
     用户提问: "{user_query}"
     """
-    res = client.chat.completions.create(model=MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=0)
+    res = client.chat.completions.create(model=LLM_MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=0)
     return re.sub(r'```(sql)?|```', '', res.choices[0].message.content).strip()
 
 def explain_results(user_query, raw_data, engine_type):
@@ -169,7 +178,7 @@ def explain_results(user_query, raw_data, engine_type):
     请用专业、自然的语言向院长汇报。如果是百分比数据，请转为易读的格式（如 50.0%）。
     如果查出数据为空，请告知没有找到对应记录。
     """
-    res = client.chat.completions.create(model=MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=0.3)
+    res = client.chat.completions.create(model=LLM_MODEL_NAME, messages=[{"role": "user", "content": prompt}], temperature=0.3)
     return res.choices[0].message.content.strip()
 
 # ================= 4. 主程序入口 =================

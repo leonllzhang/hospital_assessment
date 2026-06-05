@@ -14,19 +14,26 @@ NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD")
 
 # 通义千问 (阿里云 DashScope) API 配置
-# 请在此处填入您从阿里云百炼控制台获取的 API Key
 DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")
 
-# 模型选择：推荐使用 qwen-plus (性价比高) 或 qwen-max (能力最强)，
-# 或者最新的开源系列 qwen2.5-72b-instruct
-MODEL_NAME = "qwen-plus" 
+# ================= LLM 配置（支持 qwen / deepseek） =================
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "qwen").lower()
+LLM_BASE_URL = os.getenv("LLM_BASE_URL") or (
+    "https://api.deepseek.com" if LLM_PROVIDER == "deepseek"
+    else "https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
+LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME") or (
+    "deepseek-chat" if LLM_PROVIDER == "deepseek"
+    else "qwen-plus"
+)
+LLM_API_KEY = os.getenv("DEEPSEEK_API_KEY") if LLM_PROVIDER == "deepseek" else os.getenv("DASHSCOPE_API_KEY")
 
 # ================= 初始化 =================
 
-# 1. 配置千问客户端 (利用兼容 OpenAI 的 endpoint)
+# 1. 配置 LLM 客户端 (利用兼容 OpenAI 的 endpoint)
 client = OpenAI(
-    api_key=DASHSCOPE_API_KEY,
-    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+    api_key=LLM_API_KEY,
+    base_url=LLM_BASE_URL
 )
 
 # 2. 初始化 Neo4j 驱动
@@ -56,7 +63,7 @@ def extract_elements_with_llm(calculation_text):
     
     try:
         response = client.chat.completions.create(
-            model=MODEL_NAME,
+            model=LLM_MODEL_NAME,
             messages=[
                 {"role": "system", "content": "你是一个严格的数据抽取助手，只输出符合要求的 JSON 数据。"},
                 {"role": "user", "content": prompt}
@@ -111,7 +118,7 @@ def main():
         result = session.run("MATCH (i:Indicator) WHERE i.nature = '定量' RETURN i.id AS id, i.name AS name, i.calculation AS calc")
         indicators = [{"id": record["id"], "name": record["name"], "calc": record["calc"]} for record in result]
     
-    print(f"找到 {len(indicators)} 个定量指标。开始调用千问 ({MODEL_NAME}) 处理...\n")
+    print(f"找到 {len(indicators)} 个定量指标。开始调用模型 ({LLM_MODEL_NAME}) 处理...\n")
     
     for item in indicators:
         print(f"正在处理[{item['id']}] {item['name']} ...")
